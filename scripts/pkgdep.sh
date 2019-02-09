@@ -49,7 +49,7 @@ if [ -s /etc/redhat-release ]; then
 
 		if [ $ID = 'rhel' ]; then
 			subscription-manager repos --enable "rhel-*-optional-rpms" --enable "rhel-*-extras-rpms"
-		elif [ $ID = 'centos' ]; then
+		elif [ $ID = 'xxcentos' ]; then
 			yum --enablerepo=extras install -y epel-release
 		fi
 	fi
