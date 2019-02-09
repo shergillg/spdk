@@ -7,3 +7,6 @@
 [submodule "isa-l"]
 	path = isa-l
 	url = https://github.com/spdk/isa-l.git
+[submodule "examples/nvme/claim"]
+	path = examples/nvme/claim
+	url = https://github.com/shergillg/nvme_claim.git
