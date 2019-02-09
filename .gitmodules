@@ -10,3 +10,6 @@
 [submodule "examples/nvme/claim"]
 	path = examples/nvme/claim
 	url = https://github.com/shergillg/claim.git
+[submodule "examples/nvme/read"]
+	path = examples/nvme/read
+	url = https://github.com/shergillg/read.git
