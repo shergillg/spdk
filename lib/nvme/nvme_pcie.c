@@ -1191,6 +1191,8 @@ nvme_pcie_qpair_submit_tracker(struct spdk_nvme_qpair *qpair, struct nvme_tracke
 		req->submit_tick = 0;
 	}
 
+	nvme_qpair_print_command(qpair, &req->cmd);
+
 	pqpair->tr[tr->cid].active = true;
 
 	/* Copy the command from the tracker to the submission queue. */
