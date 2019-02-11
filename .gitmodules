@@ -16,3 +16,6 @@
 [submodule "examples/nvme/nfmt"]
 	path = examples/nvme/nfmt
 	url = https://github.com/shergillg/nfmt.git
+[submodule "examples/nvme/nqp"]
+	path = examples/nvme/nqp
+	url = https://github.com/shergillg/nqp.git
