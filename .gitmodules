@@ -13,3 +13,6 @@
 [submodule "examples/nvme/read"]
 	path = examples/nvme/read
 	url = https://github.com/shergillg/read.git
+[submodule "examples/nvme/nfmt"]
+	path = examples/nvme/nfmt
+	url = https://github.com/shergillg/nfmt.git
