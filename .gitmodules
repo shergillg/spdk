@@ -19,3 +19,6 @@
 [submodule "examples/nvme/nqp"]
 	path = examples/nvme/nqp
 	url = https://github.com/shergillg/nqp.git
+[submodule "examples/nvme/nsutil"]
+	path = examples/nvme/nsutil
+	url = https://github.com/shergillg/nsutil.git
