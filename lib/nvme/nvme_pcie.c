@@ -1029,6 +1029,8 @@ nvme_pcie_qpair_construct(struct spdk_nvme_qpair *qpair)
 		return -ENOMEM;
 	}
 
+	printf("QP: SQ=%p CQ=%p\n", pqpair->cmd, pqpair->cpl);
+
 	doorbell_base = &pctrlr->regs->doorbell[0].sq_tdbl;
 	pqpair->sq_tdbl = doorbell_base + (2 * qpair->id + 0) * pctrlr->doorbell_stride_u32;
 	pqpair->cq_hdbl = doorbell_base + (2 * qpair->id + 1) * pctrlr->doorbell_stride_u32;
