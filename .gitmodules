@@ -22,3 +22,6 @@
 [submodule "examples/nvme/nsutil"]
 	path = examples/nvme/nsutil
 	url = https://github.com/shergillg/nsutil.git
+[submodule "examples/nvme/nvdd"]
+	path = examples/nvme/nvdd
+	url = https://github.com/shergillg/nvdd.git
