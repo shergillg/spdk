@@ -118,7 +118,7 @@ nvme_admin_qpair_print_command(struct spdk_nvme_qpair *qpair,
 		       nvme_get_string(admin_opcode, cmd->opc), cmd->opc, qpair->id, cmd->cid,
 		       cmd->nsid, cmd->cdw10, cmd->cdw11);
 #endif
-	printf("SQE: %s (%02x) sqid:%d cid:%d nsid:%x cdw10:%08x cdw11:%08x\n",
+	printf("AQ SQE: %s (%02x) sqid:%d cid:%d nsid:%x cdw10:%08x cdw11:%08x\n",
 		       nvme_get_string(admin_opcode, cmd->opc), cmd->opc, qpair->id, cmd->cid,
 		       cmd->nsid, cmd->cdw10, cmd->cdw11);
 
@@ -135,7 +135,15 @@ nvme_io_qpair_print_command(struct spdk_nvme_qpair *qpair,
 	case SPDK_NVME_OPC_READ:
 	case SPDK_NVME_OPC_WRITE_UNCORRECTABLE:
 	case SPDK_NVME_OPC_COMPARE:
+#if 0
 		SPDK_NOTICELOG("%s sqid:%d cid:%d nsid:%d "
+			       "lba:%llu len:%d\n",
+			       nvme_get_string(io_opcode, cmd->opc), qpair->id, cmd->cid,
+			       cmd->nsid,
+			       ((unsigned long long)cmd->cdw11 << 32) + cmd->cdw10,
+			       (cmd->cdw12 & 0xFFFF) + 1);
+#endif
+		printf("IO SQE: %s sqid:%d cid:%d nsid:%d "
 			       "lba:%llu len:%d\n",
 			       nvme_get_string(io_opcode, cmd->opc), qpair->id, cmd->cid,
 			       cmd->nsid,
@@ -144,12 +152,22 @@ nvme_io_qpair_print_command(struct spdk_nvme_qpair *qpair,
 		break;
 	case SPDK_NVME_OPC_FLUSH:
 	case SPDK_NVME_OPC_DATASET_MANAGEMENT:
+#if 0
 		SPDK_NOTICELOG("%s sqid:%d cid:%d nsid:%d\n",
+			       nvme_get_string(io_opcode, cmd->opc), qpair->id, cmd->cid,
+			       cmd->nsid);
+#endif
+		printf("IO SQE: %s sqid:%d cid:%d nsid:%d\n",
 			       nvme_get_string(io_opcode, cmd->opc), qpair->id, cmd->cid,
 			       cmd->nsid);
 		break;
 	default:
+#if 0
 		SPDK_NOTICELOG("%s (%02x) sqid:%d cid:%d nsid:%d\n",
+			       nvme_get_string(io_opcode, cmd->opc), cmd->opc, qpair->id,
+			       cmd->cid, cmd->nsid);
+#endif
+		printf("IO SQE: %s (%02x) sqid:%d cid:%d nsid:%d\n",
 			       nvme_get_string(io_opcode, cmd->opc), cmd->opc, qpair->id,
 			       cmd->cid, cmd->nsid);
 		break;
@@ -312,10 +330,17 @@ nvme_qpair_print_completion(struct spdk_nvme_qpair *qpair,
 		       cpl->status.sct, cpl->status.sc, cpl->sqid, cpl->cid, cpl->cdw0,
 		       cpl->sqhd, cpl->status.p, cpl->status.m, cpl->status.dnr);
 #endif
-	printf("CQE: %s (%02x/%02x) sqid:%d cid:%d cdw0:%x sqhd:%04x p:%x m:%x dnr:%x\n",
+	if (nvme_qpair_is_admin_queue(qpair)) {
+	printf("AQ CQE: %s (%02x/%02x) sqid:%d cid:%d cdw0:%x sqhd:%04x p:%x m:%x dnr:%x\n",
 		       get_status_string(cpl->status.sct, cpl->status.sc),
 		       cpl->status.sct, cpl->status.sc, cpl->sqid, cpl->cid, cpl->cdw0,
 		       cpl->sqhd, cpl->status.p, cpl->status.m, cpl->status.dnr);
+	} else {
+	printf("IO CQE: %s (%02x/%02x) sqid:%d cid:%d cdw0:%x sqhd:%04x p:%x m:%x dnr:%x\n",
+		       get_status_string(cpl->status.sct, cpl->status.sc),
+		       cpl->status.sct, cpl->status.sc, cpl->sqid, cpl->cid, cpl->cdw0,
+		       cpl->sqhd, cpl->status.p, cpl->status.m, cpl->status.dnr);
+	}
 }
 
 bool
