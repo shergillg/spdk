@@ -135,6 +135,7 @@ nvme_io_qpair_print_command(struct spdk_nvme_qpair *qpair,
 	case SPDK_NVME_OPC_READ:
 	case SPDK_NVME_OPC_WRITE_UNCORRECTABLE:
 	case SPDK_NVME_OPC_COMPARE:
+	case SPDK_NVME_OPC_WRITE_ZEROES:
 #if 0
 		SPDK_NOTICELOG("%s sqid:%d cid:%d nsid:%d "
 			       "lba:%llu len:%d\n",
