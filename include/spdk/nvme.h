@@ -1741,6 +1741,11 @@ int spdk_nvme_ns_cmd_write_zeroes(struct spdk_nvme_ns *ns, struct spdk_nvme_qpai
 				  spdk_nvme_cmd_cb cb_fn, void *cb_arg,
 				  uint32_t io_flags);
 
+int spdk_nvme_ns_cmd_write_uncorr(struct spdk_nvme_ns *ns, struct spdk_nvme_qpair *qpair,
+				  uint64_t lba, uint32_t lba_count,
+				  spdk_nvme_cmd_cb cb_fn, void *cb_arg,
+				  uint32_t io_flags);
+
 /**
  * \brief Submits a read I/O to the specified NVMe namespace.
  *
