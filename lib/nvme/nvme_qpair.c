@@ -145,11 +145,15 @@ nvme_io_qpair_print_command(struct spdk_nvme_qpair *qpair,
 			       (cmd->cdw12 & 0xFFFF) + 1);
 #endif
 		printf("IO SQE: %s sqid:%d cid:%d nsid:%d "
-			       "lba:%llu len:%d\n",
+			       "lba:%llu len:%d pract=%d g=%d a=%d r=%d\n",
 			       nvme_get_string(io_opcode, cmd->opc), qpair->id, cmd->cid,
 			       cmd->nsid,
 			       ((unsigned long long)cmd->cdw11 << 32) + cmd->cdw10,
-			       (cmd->cdw12 & 0xFFFF) + 1);
+			       (cmd->cdw12 & 0xFFFF) + 1,
+				   !!(cmd->cdw12 & (1 << 29)),
+				   !!(cmd->cdw12 & (1 << 28)),
+				   !!(cmd->cdw12 & (1 << 27)),
+				   !!(cmd->cdw12 & (1 << 26)));
 		break;
 	case SPDK_NVME_OPC_FLUSH:
 	case SPDK_NVME_OPC_DATASET_MANAGEMENT:
