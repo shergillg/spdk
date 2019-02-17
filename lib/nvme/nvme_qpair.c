@@ -337,13 +337,13 @@ nvme_qpair_print_completion(struct spdk_nvme_qpair *qpair,
 		       cpl->sqhd, cpl->status.p, cpl->status.m, cpl->status.dnr);
 #endif
 	if (nvme_qpair_is_admin_queue(qpair)) {
-	printf("AQ CQE: %s (%02x/%02x) sqid:%d cid:%d cdw0:%x sqhd:%04x p:%x m:%x dnr:%x\n",
-		       get_status_string(cpl->status.sct, cpl->status.sc),
+	printf("AQ CQE: cpl:%p %s (%02x/%02x) sqid:%d cid:%d cdw0:%x sqhd:%04x p:%x m:%x dnr:%x\n",
+		       (void *)cpl, get_status_string(cpl->status.sct, cpl->status.sc),
 		       cpl->status.sct, cpl->status.sc, cpl->sqid, cpl->cid, cpl->cdw0,
 		       cpl->sqhd, cpl->status.p, cpl->status.m, cpl->status.dnr);
 	} else {
-	printf("IO CQE: %s (%02x/%02x) sqid:%d cid:%d cdw0:%x sqhd:%04x p:%x m:%x dnr:%x\n",
-		       get_status_string(cpl->status.sct, cpl->status.sc),
+	printf("IO CQE: cpl:%p %s (%02x/%02x) sqid:%d cid:%d cdw0:%x sqhd:%04x p:%x m:%x dnr:%x\n",
+		       (void *)cpl, get_status_string(cpl->status.sct, cpl->status.sc),
 		       cpl->status.sct, cpl->status.sc, cpl->sqid, cpl->cid, cpl->cdw0,
 		       cpl->sqhd, cpl->status.p, cpl->status.m, cpl->status.dnr);
 	}
