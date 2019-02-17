@@ -1698,7 +1698,7 @@ nvme_pcie_prp_list_append(struct nvme_tracker *tr, uint32_t *prp_index, void *vi
 	SPDK_DEBUGLOG(SPDK_LOG_NVME, "prp_index:%u virt_addr:%p len:%u\n",
 		      *prp_index, virt_addr, (uint32_t)len);
 #endif
-	printf("CID %d: prp_idx=%d va=%p len=%d\n", tr->cid, *prp_index, virt_addr, (uint32_t)len);
+	printf("PRP: cid:%d tr=%p prp_idx:%d va:%p len:%d\n", tr->cid, tr, *prp_index, virt_addr, (uint32_t)len);
 
 	if (spdk_unlikely(((uintptr_t)virt_addr & 3) != 0)) {
 		SPDK_ERRLOG("virt_addr %p not dword aligned\n", virt_addr);
@@ -1748,15 +1748,18 @@ nvme_pcie_prp_list_append(struct nvme_tracker *tr, uint32_t *prp_index, void *vi
 	cmd->psdt = SPDK_NVME_PSDT_PRP;
 	if (i <= 1) {
 		cmd->dptr.prp.prp2 = 0;
-		printf("CID %d: i=%d prp1=%p prp2=%p\n", tr->cid, i, (void *)cmd->dptr.prp.prp1, (void *)cmd->dptr.prp.prp2);
+		printf("PRP: cid:%d i:%d prp1:%p prp2:%p\n", tr->cid, i, (void *)cmd->dptr.prp.prp1, (void *)cmd->dptr.prp.prp2);
 	} else if (i == 2) {
 		cmd->dptr.prp.prp2 = tr->u.prp[0];
 		SPDK_DEBUGLOG(SPDK_LOG_NVME, "prp2 = %p\n", (void *)cmd->dptr.prp.prp2);
-		printf("CID %d: i=%d prp1=%p prp2=%p\n", tr->cid, i, (void *)cmd->dptr.prp.prp1, (void *)cmd->dptr.prp.prp2);
+		printf("PRP: cid:%d: i:%d prp1:%p prp2:%p\n", tr->cid, i, (void *)cmd->dptr.prp.prp1, (void *)cmd->dptr.prp.prp2);
 	} else {
 		cmd->dptr.prp.prp2 = tr->prp_sgl_bus_addr;
 		SPDK_DEBUGLOG(SPDK_LOG_NVME, "prp2 = %p (PRP list)\n", (void *)cmd->dptr.prp.prp2);
-		printf("CID %d: i=%d prp1=%p prp2(list)=%p\n", tr->cid, i, (void *)cmd->dptr.prp.prp1, (void *)cmd->dptr.prp.prp2);
+		printf("PRP: cid:%d i:%d prp1:%p prp2(list):%p\n", tr->cid, i, (void *)cmd->dptr.prp.prp1, (void *)cmd->dptr.prp.prp2);
+		/* Intentionally printing one extra PRP entry, which should be (nil). */
+		for (uint32_t j=0; j < i; j++)
+			printf("PRP: cid:%d prp[%d]=%p\n", tr->cid, j, (void *)tr->u.prp[j]);
 	}
 
 	*prp_index = i;
