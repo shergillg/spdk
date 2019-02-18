@@ -1868,11 +1868,30 @@ nvme_pcie_qpair_build_hw_sgl_request(struct spdk_nvme_qpair *qpair, struct nvme_
 		req->cmd.dptr.sgl1.unkeyed.type = SPDK_NVME_SGL_TYPE_DATA_BLOCK;
 		req->cmd.dptr.sgl1.address = tr->u.sgl[0].address;
 		req->cmd.dptr.sgl1.unkeyed.length = tr->u.sgl[0].unkeyed.length;
+
+		printf("SGE: nseg=%d addr=%p len=%d type=%d\n", nseg,
+			(void *)req->cmd.dptr.sgl1.address,
+			req->cmd.dptr.sgl1.unkeyed.length,
+			req->cmd.dptr.sgl1.unkeyed.type);
 	} else {
 		/* For now we can only support 1 SGL segment in NVMe controller */
 		req->cmd.dptr.sgl1.unkeyed.type = SPDK_NVME_SGL_TYPE_LAST_SEGMENT;
 		req->cmd.dptr.sgl1.address = tr->prp_sgl_bus_addr;
 		req->cmd.dptr.sgl1.unkeyed.length = nseg * sizeof(struct spdk_nvme_sgl_descriptor);
+
+		printf("SGE: nseg=%d SGL seg - addr=%p len=%d type=%d\n", nseg,
+			(void *)req->cmd.dptr.sgl1.address,
+			req->cmd.dptr.sgl1.unkeyed.length,
+			req->cmd.dptr.sgl1.unkeyed.type);
+
+		for (uint32_t i=0; i < nseg; i++) {
+			sgl = tr->u.sgl;
+			printf("SGE: nseg=%d/%d SGL - addr=%p len=%d type=%d\n", i, nseg,
+				(void *)sgl->address,
+				sgl->unkeyed.length,
+				sgl->unkeyed.type);
+			sgl++;
+		}
 	}
 
 	return 0;
