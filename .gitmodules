@@ -10,18 +10,24 @@
 [submodule "examples/nvme/claim"]
 	path = examples/nvme/claim
 	url = https://github.com/shergillg/claim.git
+	branch = master
 [submodule "examples/nvme/read"]
 	path = examples/nvme/read
 	url = https://github.com/shergillg/read.git
+	branch = master
 [submodule "examples/nvme/nfmt"]
 	path = examples/nvme/nfmt
 	url = https://github.com/shergillg/nfmt.git
+	branch = master
 [submodule "examples/nvme/nqp"]
 	path = examples/nvme/nqp
 	url = https://github.com/shergillg/nqp.git
+	branch = master
 [submodule "examples/nvme/nsutil"]
 	path = examples/nvme/nsutil
 	url = https://github.com/shergillg/nsutil.git
+	branch = master
 [submodule "examples/nvme/nvdd"]
 	path = examples/nvme/nvdd
 	url = https://github.com/shergillg/nvdd.git
+	branch = master
