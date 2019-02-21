@@ -69,6 +69,8 @@ spdk_rpc_construct_malloc_bdev(struct spdk_jsonrpc_request *request,
 	struct spdk_uuid decoded_uuid;
 	struct spdk_bdev *bdev;
 
+	printf("%s(): RPC entry for Malloc bdev...\n", __func__);
+
 	if (spdk_json_decode_object(params, rpc_construct_malloc_decoders,
 				    SPDK_COUNTOF(rpc_construct_malloc_decoders),
 				    &req)) {
@@ -83,6 +85,8 @@ spdk_rpc_construct_malloc_bdev(struct spdk_jsonrpc_request *request,
 		uuid = &decoded_uuid;
 	}
 
+	printf("%s(): Constructing Malloc Bdev - uuid=%s num_blocks=%ld block_size=%d\n",
+		__func__, req.uuid, req.num_blocks, req.block_size);
 	bdev = create_malloc_disk(req.name, uuid, req.num_blocks, req.block_size);
 	if (bdev == NULL) {
 		goto invalid;
@@ -142,6 +146,8 @@ spdk_rpc_delete_malloc_bdev(struct spdk_jsonrpc_request *request,
 	struct spdk_bdev *bdev;
 	int rc;
 
+	printf("%s(): Delete Malloc bdev entry...\n", __func__);
+
 	if (spdk_json_decode_object(params, rpc_delete_malloc_decoders,
 				    SPDK_COUNTOF(rpc_delete_malloc_decoders),
 				    &req)) {
@@ -156,6 +162,7 @@ spdk_rpc_delete_malloc_bdev(struct spdk_jsonrpc_request *request,
 		rc = -ENODEV;
 		goto invalid;
 	}
+	printf("%s(): Delete name=%s bdev=%p\n", __func__, req.name, bdev);
 
 	delete_malloc_disk(bdev, _spdk_rpc_delete_malloc_bdev_cb, request);
 

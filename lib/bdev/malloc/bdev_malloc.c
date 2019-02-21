@@ -431,6 +431,8 @@ struct spdk_bdev *create_malloc_disk(const char *name, const struct spdk_uuid *u
 	mdisk->disk.fn_table = &malloc_fn_table;
 	mdisk->disk.module = &malloc_if;
 
+	printf("%s(): calling spdk_bdev_register() name=%s lba=%ld lbasz=%d...\n",
+		__func__, mdisk->disk.name, mdisk->disk.blockcnt, mdisk->disk.blocklen);
 	rc = spdk_bdev_register(&mdisk->disk);
 	if (rc) {
 		malloc_disk_free(mdisk);
@@ -450,6 +452,7 @@ delete_malloc_disk(struct spdk_bdev *bdev, spdk_delete_malloc_complete cb_fn, vo
 		return;
 	}
 
+	printf("%s(): calling spdk_bdev_unregister()... name=%s\n", __func__, bdev->name);
 	spdk_bdev_unregister(bdev, cb_fn, cb_arg);
 }
 
@@ -472,6 +475,8 @@ static int bdev_malloc_initialize(void)
 			/* Default is 512 bytes */
 			BlockSize = 512;
 		}
+		printf("%s(): NumberOfLuns=%d LunSizeInMB=%d BlockSize=%d\n", __func__,
+			NumberOfLuns, LunSizeInMB, BlockSize);
 		size = (uint64_t)LunSizeInMB * 1024 * 1024;
 		for (i = 0; i < NumberOfLuns; i++) {
 			bdev = create_malloc_disk(NULL, NULL, size / BlockSize, BlockSize);
