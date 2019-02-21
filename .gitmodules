@@ -31,3 +31,7 @@
 	path = examples/nvme/nvdd
 	url = https://github.com/shergillg/nvdd.git
 	branch = master
+[submodule "examples/bdev/bdone"]
+	path = examples/bdev/bdone
+	url = https://github.com/shergillg/bdone.git
+	branch = master
