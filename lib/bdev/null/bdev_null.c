@@ -204,6 +204,8 @@ create_null_bdev(const char *name, const struct spdk_uuid *uuid,
 	bdev->bdev.fn_table = &null_fn_table;
 	bdev->bdev.module = &null_if;
 
+	printf("%s(): calling spdk_bdev_register(). name=%s lba=%ld lbasz=%d\n",
+		__func__, bdev->bdev.name, bdev->bdev.blockcnt, bdev->bdev.blocklen);
 	rc = spdk_bdev_register(&bdev->bdev);
 	if (rc) {
 		free(bdev->bdev.name);
@@ -224,6 +226,7 @@ delete_null_bdev(struct spdk_bdev *bdev, spdk_delete_null_complete cb_fn, void *
 		return;
 	}
 
+	printf("%s(): calling spdk_bdev_unregister(). name=%s\n", __func__, bdev->name);
 	spdk_bdev_unregister(bdev, cb_fn, cb_arg);
 }
 
@@ -278,6 +281,7 @@ bdev_null_initialize(void)
 	struct spdk_bdev *bdev;
 	const char *name, *val;
 
+	printf("%s(): Initializing Null bdev module...\n", __func__);
 	TAILQ_INIT(&g_null_bdev_head);
 
 	/*
@@ -338,6 +342,8 @@ bdev_null_initialize(void)
 
 		num_blocks = size_in_mb * (1024 * 1024) / block_size;
 
+		printf("%s(): i=%d - Dev name=%s sz_in_mb=%ld block_sz=%d\n", __func__, i, name,
+			size_in_mb, block_size);
 		bdev = create_null_bdev(name, NULL, num_blocks, block_size);
 		if (bdev == NULL) {
 			SPDK_ERRLOG("Could not create null bdev\n");

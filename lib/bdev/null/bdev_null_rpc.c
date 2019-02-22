@@ -70,6 +70,7 @@ spdk_rpc_construct_null_bdev(struct spdk_jsonrpc_request *request,
 	struct spdk_uuid decoded_uuid;
 	struct spdk_bdev *bdev;
 
+	printf("%s(): Construct null bdev called...\n", __func__);
 	if (spdk_json_decode_object(params, rpc_construct_null_decoders,
 				    SPDK_COUNTOF(rpc_construct_null_decoders),
 				    &req)) {
@@ -143,6 +144,7 @@ spdk_rpc_delete_null_bdev(struct spdk_jsonrpc_request *request,
 	struct spdk_bdev *bdev;
 	int rc;
 
+	printf("%s(): Delete Null bdev called...\n", __func__);
 	if (spdk_json_decode_object(params, rpc_delete_null_decoders,
 				    SPDK_COUNTOF(rpc_delete_null_decoders),
 				    &req)) {
