@@ -89,6 +89,8 @@ bdev_null_submit_request(struct spdk_io_channel *_ch, struct spdk_bdev_io *bdev_
 {
 	struct null_io_channel *ch = spdk_io_channel_get_ctx(_ch);
 
+	printf("%s(): type=%d offset_block=%ld num_blocks=%ld\n", __func__,
+		bdev_io->type, bdev_io->u.bdev.offset_blocks, bdev_io->u.bdev.num_blocks);
 	switch (bdev_io->type) {
 	case SPDK_BDEV_IO_TYPE_READ:
 		if (bdev_io->u.bdev.iovs[0].iov_base == NULL) {
@@ -119,10 +121,12 @@ bdev_null_io_type_supported(void *ctx, enum spdk_bdev_io_type io_type)
 	case SPDK_BDEV_IO_TYPE_WRITE:
 	case SPDK_BDEV_IO_TYPE_WRITE_ZEROES:
 	case SPDK_BDEV_IO_TYPE_RESET:
+		printf("%s(): returning TRUE for io_type=%d\n", __func__, io_type);
 		return true;
 	case SPDK_BDEV_IO_TYPE_FLUSH:
 	case SPDK_BDEV_IO_TYPE_UNMAP:
 	default:
+		printf("%s(): returning FALSE for io_type=%d\n", __func__, io_type);
 		return false;
 	}
 }
@@ -130,6 +134,7 @@ bdev_null_io_type_supported(void *ctx, enum spdk_bdev_io_type io_type)
 static struct spdk_io_channel *
 bdev_null_get_io_channel(void *ctx)
 {
+	printf("%s(): calling spdk_get_io_channel()...\n", __func__);
 	return spdk_get_io_channel(&g_null_bdev_head);
 }
 
