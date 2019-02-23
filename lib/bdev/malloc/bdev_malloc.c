@@ -318,6 +318,8 @@ static int _bdev_malloc_submit_request(struct spdk_io_channel *ch, struct spdk_b
 
 static void bdev_malloc_submit_request(struct spdk_io_channel *ch, struct spdk_bdev_io *bdev_io)
 {
+	printf("%s(): type=%d offset_blocks=%ld num_blocks=%ld\n", __func__,
+		bdev_io->type, bdev_io->u.bdev.offset_blocks, bdev_io->u.bdev.num_blocks);
 	if (_bdev_malloc_submit_request(ch, bdev_io) != 0) {
 		spdk_bdev_io_complete(bdev_io, SPDK_BDEV_IO_STATUS_FAILED);
 	}
@@ -333,9 +335,11 @@ bdev_malloc_io_type_supported(void *ctx, enum spdk_bdev_io_type io_type)
 	case SPDK_BDEV_IO_TYPE_RESET:
 	case SPDK_BDEV_IO_TYPE_UNMAP:
 	case SPDK_BDEV_IO_TYPE_WRITE_ZEROES:
+		printf("%s(): returning TRUE for io_type=%d\n", __func__, io_type);
 		return true;
 
 	default:
+		printf("%s(): returning FALSE for io_type=%d\n", __func__, io_type);
 		return false;
 	}
 }
@@ -343,6 +347,7 @@ bdev_malloc_io_type_supported(void *ctx, enum spdk_bdev_io_type io_type)
 static struct spdk_io_channel *
 bdev_malloc_get_io_channel(void *ctx)
 {
+	printf("%s(): calling spdk_copy_engine_get_io_channel() to get io channel...\n", __func__);
 	return spdk_copy_engine_get_io_channel();
 }
 
