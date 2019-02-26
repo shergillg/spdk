@@ -1869,7 +1869,7 @@ nvme_pcie_qpair_build_hw_sgl_request(struct spdk_nvme_qpair *qpair, struct nvme_
 		req->cmd.dptr.sgl1.address = tr->u.sgl[0].address;
 		req->cmd.dptr.sgl1.unkeyed.length = tr->u.sgl[0].unkeyed.length;
 
-		printf("SGE: nseg=%d addr=%p len=%d type=%d\n", nseg,
+		printf("SGE: nseg=%d tr=%p/%p - sgle_addr=%p sgle_len=%d sgle_type=%d\n", nseg, tr, (void *)spdk_vtophys(tr, NULL),
 			(void *)req->cmd.dptr.sgl1.address,
 			req->cmd.dptr.sgl1.unkeyed.length,
 			req->cmd.dptr.sgl1.unkeyed.type);
@@ -1879,14 +1879,14 @@ nvme_pcie_qpair_build_hw_sgl_request(struct spdk_nvme_qpair *qpair, struct nvme_
 		req->cmd.dptr.sgl1.address = tr->prp_sgl_bus_addr;
 		req->cmd.dptr.sgl1.unkeyed.length = nseg * sizeof(struct spdk_nvme_sgl_descriptor);
 
-		printf("SGE: nseg=%d SGL seg - addr=%p len=%d type=%d\n", nseg,
+		printf("SGE: nseg=%d tr=%p/%p - sgls_addr=%p sgls_len=%d sgls_type=%d\n", nseg, tr, (void *)spdk_vtophys(tr, NULL),
 			(void *)req->cmd.dptr.sgl1.address,
 			req->cmd.dptr.sgl1.unkeyed.length,
 			req->cmd.dptr.sgl1.unkeyed.type);
 
+		sgl = tr->u.sgl;
 		for (uint32_t i=0; i < nseg; i++) {
-			sgl = tr->u.sgl;
-			printf("SGE: nseg=%d/%d SGL - addr=%p len=%d type=%d\n", i, nseg,
+			printf("SGE: nseg=%d/%d - sgle_addr=%p sgle_len=%d sgle_type=%d\n", i, nseg,
 				(void *)sgl->address,
 				sgl->unkeyed.length,
 				sgl->unkeyed.type);
