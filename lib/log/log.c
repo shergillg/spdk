@@ -4,15 +4,16 @@
  */
 
 #include "spdk/stdinc.h"
+#include "spdk/env.h"
 
 #include "spdk/log.h"
 
 static const char *const spdk_level_names[] = {
-	[SPDK_LOG_ERROR]	= "ERROR",
-	[SPDK_LOG_WARN]		= "WARNING",
-	[SPDK_LOG_NOTICE]	= "NOTICE",
-	[SPDK_LOG_INFO]		= "INFO",
-	[SPDK_LOG_DEBUG]	= "DEBUG",
+	[SPDK_LOG_ERROR]	= "E",
+	[SPDK_LOG_WARN]		= "W",
+	[SPDK_LOG_NOTICE]	= "N",
+	[SPDK_LOG_INFO]		= "I",
+	[SPDK_LOG_DEBUG]	= "D",
 };
 
 #define MAX_TMPBUF 1024
@@ -94,8 +95,8 @@ get_timestamp_prefix(char *buf, int buf_size)
 		return;
 	}
 
-	strftime(date, sizeof(date), "%Y-%m-%d %H:%M:%S", info);
-	snprintf(buf, buf_size, "[%s.%06ld] ", date, usec);
+	strftime(date, sizeof(date), "%S", info);
+	snprintf(buf, buf_size, "%s.%06ld", date, usec);
 }
 
 void
@@ -175,7 +176,8 @@ spdk_vlog(enum spdk_log_level level, const char *file, const int line, const cha
 	if (level <= g_spdk_log_print_level) {
 		get_timestamp_prefix(timestamp, sizeof(timestamp));
 		if (file) {
-			fprintf(stderr, "%s%s:%4d:%s: *%s*: %s", timestamp, file, line, func, spdk_level_names[level], buf);
+			fprintf(stderr, "[%s%u,%s] {%s,%s} - %s", spdk_level_names[level], spdk_env_get_current_core(),
+                    timestamp, file, func,  buf);
 		} else {
 			fprintf(stderr, "%s%s", timestamp, buf);
 		}
