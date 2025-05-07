@@ -2,11 +2,12 @@ echo "Doing clean."
 make clean
 
 echo "Doing configure."
-./configure --enable-tests            \
-            --enable-debug            \
-            --enable-unit-tests       \
-            --enable-examples         \
+./configure --enable-debug            \
             --enable-apps             \
+            --disable-tests           \
+            --disable-unit-tests      \
+            --disable-examples        \
+                                      \
             --with-rdma               \
             --with-vfio-user          \
                                       \
@@ -45,4 +46,4 @@ if [[ $? -ne 0 ]]; then
 fi
 
 echo "Doing make."
-make
+make -j32
