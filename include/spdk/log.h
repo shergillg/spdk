@@ -111,6 +111,8 @@ enum spdk_log_level spdk_log_get_print_level(void);
 	spdk_log(SPDK_LOG_WARN, __FILE__, __LINE__, __func__, __VA_ARGS__)
 #define SPDK_ERRLOG(...) \
 	spdk_log(SPDK_LOG_ERROR, __FILE__, __LINE__, __func__, __VA_ARGS__)
+#define SPDK_DBG(...) \
+	spdk_log(SPDK_LOG_ERROR, __FILE__, __LINE__, __func__, __VA_ARGS__)
 #define SPDK_PRINTF(...) \
 	spdk_log(SPDK_LOG_NOTICE, NULL, -1, NULL, __VA_ARGS__)
 #define SPDK_INFOLOG(flag, ...)									\
