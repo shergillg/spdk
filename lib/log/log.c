@@ -176,8 +176,8 @@ spdk_vlog(enum spdk_log_level level, const char *file, const int line, const cha
 	if (level <= g_spdk_log_print_level) {
 		get_timestamp_prefix(timestamp, sizeof(timestamp));
 		if (file) {
-			fprintf(stderr, "[%s%u,%s] {%s,%s} - %s", spdk_level_names[level], spdk_env_get_current_core(),
-                    timestamp, file, func,  buf);
+			// fprintf(stderr, "[%s%u,%s] {%s,%s} - %s", spdk_level_names[level], spdk_env_get_current_core(), timestamp, file, func,  buf);
+			fprintf(stderr, "[%s-,%s] {%s,%s} - %s", spdk_level_names[level], timestamp, file, func,  buf);
 		} else {
 			fprintf(stderr, "%s%s", timestamp, buf);
 		}
