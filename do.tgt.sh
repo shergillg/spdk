@@ -34,11 +34,15 @@ RPC="./scripts/rpc.py"
 spdk_start_tgt_app() {
     echo "Kill nvmf_tgt app..."
     $RPC spdk_kill_instance SIGTERM
-    sleep 1
 
     echo "Starting new nvmf_tgt app..."
     $TGT_APP -m $TGT_CPU -s $TGT_MEM --wait-for-rpc > $TGT_LOG 2>&1 &
+
+    # Following sleep is needed otherwise the rpc calls sometimes don't have any affect.
     sleep 1
+    $RPC log_set_level debug
+    $RPC log_set_flag nvmf
+    $RPC log_set_flag nvmf_tcp
 }
 
 spdk_start_transport() {
