@@ -95,6 +95,7 @@ nvmf_shutdown_cb(void *arg1)
 static void
 nvmf_subsystem_fini(void)
 {
+    SPDK_DBG("Shutting down nvmf subsystem and tgt\n");
 	nvmf_shutdown_cb(NULL);
 }
 
@@ -207,11 +208,14 @@ nvmf_tgt_create_poll_groups(void)
 	g_tgt_init_thread = spdk_get_thread();
 	assert(g_tgt_init_thread != NULL);
 
+    SPDK_DBG("Creating poll groups for all CPUs\n");
 	SPDK_ENV_FOREACH_CORE(cpu) {
+        SPDK_DBG("CPU=%d / 0x%x\n", cpu, cpu);
 		if (g_poll_groups_mask && !spdk_cpuset_get_cpu(g_poll_groups_mask, cpu)) {
 			continue;
 		}
 		snprintf(thread_name, sizeof(thread_name), "nvmf_tgt_poll_group_%03u", count++);
+        SPDK_DBG("thread name=%s\n", thread_name);
 
 		thread = spdk_thread_create(thread_name, g_poll_groups_mask);
 		assert(thread != NULL);
@@ -332,6 +336,8 @@ nvmf_add_discovery_subsystem(void)
 {
 	struct spdk_nvmf_subsystem *subsystem;
 
+    SPDK_DBG("Adding default discovery subsys to g_spdk_nvmf_tgt. nqn=%s\n",
+            SPDK_NVMF_DISCOVERY_NQN);
 	subsystem = spdk_nvmf_subsystem_create(g_spdk_nvmf_tgt, SPDK_NVMF_DISCOVERY_NQN,
 					       SPDK_NVMF_SUBTYPE_DISCOVERY_CURRENT, 0);
 	if (subsystem == NULL) {
@@ -347,6 +353,7 @@ nvmf_add_discovery_subsystem(void)
 static int
 nvmf_tgt_create_target(void)
 {
+    SPDK_DBG("Creating the tgt using g_spdk_nvmf_tgt_conf\n");
 	g_spdk_nvmf_tgt = spdk_nvmf_tgt_create(&g_spdk_nvmf_tgt_conf.opts);
 	if (!g_spdk_nvmf_tgt) {
 		SPDK_ERRLOG("spdk_nvmf_tgt_create() failed\n");
@@ -448,6 +455,7 @@ nvmf_tgt_advance_state(void)
 		SPDK_DTRACE_PROBE1(nvmf_tgt_state, g_tgt_state);
 		prev_state = g_tgt_state;
 
+        SPDK_DBG("g_tgt_state=%d\n", g_tgt_state);
 		switch (g_tgt_state) {
 		case NVMF_TGT_INIT_NONE: {
 			g_tgt_state = NVMF_TGT_INIT_CREATE_TARGET;
@@ -530,6 +538,7 @@ nvmf_tgt_advance_state(void)
 static void
 nvmf_subsystem_init(void)
 {
+    SPDK_DBG("Starting nvmf subsystem and tgt init\n");
 	g_tgt_state = NVMF_TGT_INIT_NONE;
 	nvmf_tgt_advance_state();
 }

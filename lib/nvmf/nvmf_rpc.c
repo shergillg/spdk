@@ -2339,6 +2339,7 @@ rpc_nvmf_create_target(struct spdk_jsonrpc_request *request,
 		goto out;
 	}
 
+    SPDK_DBG("Creating nvmf_tgt. name=%s\n", opts.name);
 	tgt = spdk_nvmf_tgt_create(&opts);
 
 	if (tgt == NULL) {
@@ -2649,6 +2650,7 @@ rpc_nvmf_create_transport(struct spdk_jsonrpc_request *request,
 	ctx->opts.transport_specific = params;
 	ctx->request = request;
 
+    SPDK_DBG("Calling create_async name=%s\n", ctx->trtype);
 	rc = spdk_nvmf_transport_create_async(ctx->trtype, &ctx->opts, nvmf_rpc_create_transport_done, ctx);
 	if (rc) {
 		SPDK_ERRLOG("Transport type '%s' create failed\n", ctx->trtype);

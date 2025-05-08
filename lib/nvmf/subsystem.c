@@ -224,6 +224,7 @@ spdk_nvmf_subsystem_create(struct spdk_nvmf_tgt *tgt,
 	struct spdk_nvmf_subsystem	*subsystem;
 	uint32_t			sid;
 
+    SPDK_DBG("Creating subsys with num_ns=%d for nqn=%s\n", num_ns, nqn);
 	if (spdk_nvmf_tgt_find_subsystem(tgt, nqn)) {
 		SPDK_ERRLOG("Subsystem NQN '%s' already exists\n", nqn);
 		return NULL;
@@ -793,6 +794,7 @@ spdk_nvmf_subsystem_start(struct spdk_nvmf_subsystem *subsystem,
 			  spdk_nvmf_subsystem_state_change_done cb_fn,
 			  void *cb_arg)
 {
+    SPDK_DBG("Starting id=%d subnqn=%s\n", subsystem->id, subsystem->subnqn);
 	return nvmf_subsystem_state_change(subsystem, 0, SPDK_NVMF_SUBSYSTEM_ACTIVE, cb_fn, cb_arg);
 }
 
@@ -801,6 +803,7 @@ spdk_nvmf_subsystem_stop(struct spdk_nvmf_subsystem *subsystem,
 			 spdk_nvmf_subsystem_state_change_done cb_fn,
 			 void *cb_arg)
 {
+    SPDK_DBG("Stopping id=%d subnqn=%s\n", subsystem->id, subsystem->subnqn);
 	return nvmf_subsystem_state_change(subsystem, 0, SPDK_NVMF_SUBSYSTEM_INACTIVE, cb_fn, cb_arg);
 }
 
@@ -810,6 +813,7 @@ spdk_nvmf_subsystem_pause(struct spdk_nvmf_subsystem *subsystem,
 			  spdk_nvmf_subsystem_state_change_done cb_fn,
 			  void *cb_arg)
 {
+    SPDK_DBG("Pause id=%d subnqn=%s\n", subsystem->id, subsystem->subnqn);
 	return nvmf_subsystem_state_change(subsystem, nsid, SPDK_NVMF_SUBSYSTEM_PAUSED, cb_fn, cb_arg);
 }
 
@@ -818,6 +822,7 @@ spdk_nvmf_subsystem_resume(struct spdk_nvmf_subsystem *subsystem,
 			   spdk_nvmf_subsystem_state_change_done cb_fn,
 			   void *cb_arg)
 {
+    SPDK_DBG("Resume id=%d subnqn=%s\n", subsystem->id, subsystem->subnqn);
 	return nvmf_subsystem_state_change(subsystem, 0, SPDK_NVMF_SUBSYSTEM_ACTIVE, cb_fn, cb_arg);
 }
 
@@ -1249,6 +1254,7 @@ int
 spdk_nvmf_subsystem_set_allow_any_host(struct spdk_nvmf_subsystem *subsystem, bool allow_any_host)
 {
 	pthread_mutex_lock(&subsystem->mutex);
+    SPDK_DBG(" allow_any_host=%d\n", allow_any_host);
 	subsystem->allow_any_host = allow_any_host;
 	if (!TAILQ_EMPTY(&subsystem->listeners)) {
 		nvmf_update_discovery_log(subsystem->tgt, NULL);

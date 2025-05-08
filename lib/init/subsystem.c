@@ -34,6 +34,7 @@ static struct spdk_thread *g_fini_thread = NULL;
 void
 spdk_add_subsystem(struct spdk_subsystem *subsystem)
 {
+    SPDK_DBG("Adding subsystem [%s]\n", subsystem->name);
 	TAILQ_INSERT_TAIL(&g_subsystems, subsystem, tailq);
 }
 

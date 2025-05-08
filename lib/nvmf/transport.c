@@ -59,6 +59,7 @@ spdk_nvmf_transport_register(const struct spdk_nvmf_transport_ops *ops)
 
 	new_ops->ops = *ops;
 
+    SPDK_DBG("Registering name=%s type=%d\n", ops->name, ops->type);
 	TAILQ_INSERT_TAIL(&g_spdk_nvmf_transport_ops, new_ops, link);
 }
 
@@ -252,6 +253,8 @@ nvmf_transport_create(const char *transport_name, struct spdk_nvmf_transport_opt
 		goto err;
 	}
 
+    SPDK_DBG("Creating transport name=%s sync=%d\n", transport_name, sync);
+
 	nvmf_transport_opts_copy(&ctx->opts, opts, opts->opts_size);
 	if (ctx->opts.max_io_size != 0 && (!spdk_u32_is_pow2(ctx->opts.max_io_size) ||
 					   ctx->opts.max_io_size < 8192)) {
@@ -325,6 +328,7 @@ int
 spdk_nvmf_transport_create_async(const char *transport_name, struct spdk_nvmf_transport_opts *opts,
 				 spdk_nvmf_transport_create_done_cb cb_fn, void *cb_arg)
 {
+    SPDK_DBG("async path. name=%s\n", transport_name);
 	return nvmf_transport_create(transport_name, opts, cb_fn, cb_arg, false);
 }
 
@@ -344,6 +348,7 @@ spdk_nvmf_transport_create(const char *transport_name, struct spdk_nvmf_transpor
 	/* Current implementation supports synchronous version of create operation only. */
 	assert(nvmf_get_transport_ops(transport_name) && nvmf_get_transport_ops(transport_name)->create);
 
+    SPDK_DBG("sync path. name=%s\n", transport_name);
 	nvmf_transport_create(transport_name, opts, nvmf_transport_create_sync_done, &transport, true);
 	return transport;
 }

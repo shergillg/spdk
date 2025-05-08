@@ -20,7 +20,7 @@
 
 SPDK_LOG_REGISTER_COMPONENT(nvmf)
 
-#define SPDK_NVMF_DEFAULT_MAX_SUBSYSTEMS 1024
+#define SPDK_NVMF_DEFAULT_MAX_SUBSYSTEMS 32
 
 static TAILQ_HEAD(, spdk_nvmf_tgt) g_nvmf_tgts = TAILQ_HEAD_INITIALIZER(g_nvmf_tgts);
 
@@ -360,6 +360,8 @@ spdk_nvmf_tgt_create(struct spdk_nvmf_target_opts *_opts)
 		.max_subsystems = SPDK_NVMF_DEFAULT_MAX_SUBSYSTEMS,
 		.discovery_filter = SPDK_NVMF_TGT_DISCOVERY_MATCH_ANY,
 	};
+
+    SPDK_DBG("Creating tgt. name=%s max_subsystems=%d\n", opts.name, opts.max_subsystems);
 
 	memcpy(&opts, _opts, _opts->size);
 	if (strnlen(opts.name, NVMF_TGT_NAME_MAX_LENGTH) == NVMF_TGT_NAME_MAX_LENGTH) {
@@ -968,6 +970,7 @@ spdk_nvmf_tgt_add_transport(struct spdk_nvmf_tgt *tgt,
 	ctx->cb_fn = cb_fn;
 	ctx->cb_arg = cb_arg;
 
+    SPDK_DBG("Adding transport [%s] to tgt.\n", transport->ops->name);
 	spdk_for_each_channel(tgt,
 			      _nvmf_tgt_add_transport,
 			      ctx,
