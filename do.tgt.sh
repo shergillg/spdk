@@ -7,7 +7,7 @@ T1_IP=192.168.0.16
 T1_PORT=4420
 T1_NQN=nqn.2025-02.io.spdk:rdma:dl16a
 
-T1_DIP=$IP
+T1_DIP=$T1_IP
 T1_DPORT=4420
 T1_DNQN=nqn.2014-08.org.nvmexpress.discovery
 
@@ -18,58 +18,69 @@ T2_IP=192.168.0.16
 T2_PORT=4420
 T2_NQN=nqn.2025-02.io.spdk:tcp:dl16a
 
-T2_DIP=$IP
+T2_DIP=$T2_IP
 T2_DPORT=8009
-T2_DNQN=nqn.2014-08.org.nvmexpress.discovery
+T2_DNQN="nqn.2014-08.org.nvmexpress.discovery"
 
-MAX_QPS_PER_CTRLR=16
+MAX_IO_QP=2
+MAX_QD=128
+MAX_QD_AQ=32
+MAX_IO_SZ=262144
+IO_UNIT_SZ=131072
+NUM_SH_BUF=1024
 
 TGT_APP="./build/bin/nvmf_tgt"
-TGT_CPU="0x03"
-TGT_MEM=1024
+TGT_CPU="0x0f"
+TGT_MEM=3072
 TGT_LOG="tgt.log"
 
 RPC="./scripts/rpc.py"
 
 spdk_start_tgt_app() {
-    echo "Kill nvmf_tgt app..."
-    $RPC spdk_kill_instance SIGTERM
+    pgrep -f nvmf_tgt
+    status=$?
+    if [ $status -eq 0 ]; then
+        echo "Kill nvmf_tgt app..."
+        $RPC spdk_kill_instance SIGTERM
+        sleep 1
+    fi
 
     echo "Starting new nvmf_tgt app..."
     $TGT_APP -m $TGT_CPU -s $TGT_MEM --wait-for-rpc > $TGT_LOG 2>&1 &
 
     # Following sleep is needed otherwise the rpc calls sometimes don't have any affect.
     sleep 1
+
+    echo "Setting up debug level and module flags..."
     $RPC log_set_level debug
     $RPC log_set_flag nvmf
     $RPC log_set_flag nvmf_tcp
+
+    # Init the framework now.
+    echo "Doing framework init.."
+    $RPC framework_start_init
+    sleep 1
 }
 
 spdk_start_transport() {
-    FW_INIT=$1
+    TRANS=$1
+    IP=$2
+    PORT=$3
+    NQN=$4
 
-    TRANS=$2
-    IP=$3
-    PORT=$4
-    NQN=$5
-
-    DIP=$6
-    DPORT=$7
-    DNQN=$8
-
-    # Start subsystem initialization.
-    if [[ "$FW_INIT" == "yes" ]]; then
-        $RPC framework_start_init
-    fi
+    DIP=$5
+    DPORT=$6
+    DNQN=$7
 
     # Initialize transport.
-    $RPC nvmf_create_transport -t $TRANS -q 128 -m 1 -c 4096 -i 131072 -u 131072 -a 128 -b 32 -n 4096 \
-                                            -c $MAX_QPS_PER_CTRLR
-
-    return
+    $RPC nvmf_create_transport -t $TRANS -q $MAX_QD -m $MAX_IO_QP \
+            -i $MAX_IO_SZ -u $IO_UNIT_SZ -a $MAX_QD_AQ -n $NUM_SH_BUF
 
     # Discovery subsystem already exists. Add listner for it.
+    echo "Adding listner for $DNQN.."
     $RPC nvmf_subsystem_add_listener -t $TRANS -a $DIP -s $DPORT $DNQN
+
+    return
 
     # Create a subsystem. Let any host access it. Create a listner for it.
     $RPC nvmf_create_subsystem $NQN 
@@ -87,9 +98,9 @@ spdk_start_transport() {
 
 spdk_start_tgt_app 
 
-echo "Creating transport $T1_TRANS"
-spdk_start_transport "yes" $T1_TRANS $T1_IP $T1_PORT $T1_NQN $T1_DIP $T1_DPORT $T1_DNQN
+# echo "Creating transport $T1_TRANS"
+# spdk_start_transport $T1_TRANS $T1_IP $T1_PORT $T1_NQN $T1_DIP $T1_DPORT $T1_DNQN
 
 echo "Creating transport $T2_TRANS"
-spdk_start_transport "no" $T2_TRANS $T2_IP $T2_PORT $T2_NQN $T2_DIP $T2_DPORT $T2_DNQN
+spdk_start_transport $T2_TRANS $T2_IP $T2_PORT $T2_NQN $T2_DIP $T2_DPORT $T2_DNQN
 
