@@ -1,11 +1,11 @@
 #!/usr/bin/bash
 
-TR="trtype:RDMA"
+TR="trtype:tcp"
 TR+=" adrfam:IPv4"
-TR+=" traddr:192.168.0.29"
+TR+=" traddr:192.168.0.16"
 TR+=" trsvcid:4420"
-TR+=" subnqn:nqn.2025-02.io.spdk:dl29"
-TR+=" hostnqn:nqn.2025-05.io.spdk:dl16"
+TR+=" subnqn:nqn.2025-02.io.spdk:tcp:dl16a"
+TR+=" hostnqn:nqn.2025-05.io.spdk:dl16i"
 
 SPDK_PERF="./build/bin/spdk_nvme_perf"
 
@@ -19,7 +19,9 @@ IOMIX="50"      # with rw or randrw ... --rwmixread $IOMIX \
 HM_SZ="512"     # Hugemem size
 
 TIME="100"      # Intentionally high.
-NUM_IOS="5"     # Num IO per thread on each namespace.
+NUM_IOS="2"     # Num IO per thread on each namespace.
+
+LOGFN="perf.log"
 
 echo "Connecting to $TR..."
 $SPDK_PERF \
@@ -34,7 +36,7 @@ $SPDK_PERF \
     --number-ios $NUM_IOS \
     --time $TIME \
     --logflag nvme \
-    --transport-stats
+    --transport-stats 2>&1 | tee $LOGFN
     
 
 
