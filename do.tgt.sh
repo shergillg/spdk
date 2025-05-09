@@ -49,7 +49,7 @@ spdk_start_tgt_app() {
     $TGT_APP -m $TGT_CPU -s $TGT_MEM --wait-for-rpc > $TGT_LOG 2>&1 &
 
     # Following sleep is needed otherwise the rpc calls sometimes don't have any affect.
-    sleep 1
+    sleep 2
 
     echo "Setting up debug level and module flags..."
     $RPC log_set_level debug
@@ -80,10 +80,27 @@ spdk_start_transport() {
     echo "Adding listner for $DNQN.."
     $RPC nvmf_subsystem_add_listener -t $TRANS -a $DIP -s $DPORT $DNQN
 
-    return
+    # sleep 2
+    # echo "Removing listner for $DNQN.."
+    # $RPC nvmf_subsystem_remove_listener -t $TRANS -a $DIP -s $DPORT $DNQN
+
 
     # Create a subsystem. Let any host access it. Create a listner for it.
-    $RPC nvmf_create_subsystem $NQN 
+    SN="SerNum_Test101"
+    MN="ModelNum_AMP20k"
+    MAX_NS=256
+    MIN_CNTLID=1000
+    MAX_CNTLID=2000
+    MAX_DIS_SZ=1024
+    MAX_WZERO_SZ=1024
+
+    echo "Creating subsys for $NQN..."
+    $RPC nvmf_create_subsystem -s $SN -d $MN -m $MAX_NS \
+        -i $MIN_CNTLID -I $MAX_CNTLID \
+        --max-discard-size $MAX_DIS_SZ --max_write-zeroes-size $MAX_WZERO_SZ $NQN 
+
+
+    # Allow any host ... -e (enabled) and  -d (disable)
     $RPC nvmf_subsystem_allow_any_host -e $NQN 
     $RPC nvmf_subsystem_add_listener -t $TRANS -a $IP -s $PORT $NQN
 
