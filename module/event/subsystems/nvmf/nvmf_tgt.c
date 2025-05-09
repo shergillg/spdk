@@ -175,6 +175,7 @@ nvmf_tgt_create_poll_group_done(void *ctx)
 		if (g_tgt_state != NVMF_TGT_ERROR) {
 			g_tgt_state = NVMF_TGT_INIT_START_SUBSYSTEMS;
 		}
+        SPDK_DBG("g_num_poll_groups=%ld ... moving to next state\n", g_num_poll_groups);
 		nvmf_tgt_advance_state();
 	}
 }
@@ -208,7 +209,7 @@ nvmf_tgt_create_poll_groups(void)
 	g_tgt_init_thread = spdk_get_thread();
 	assert(g_tgt_init_thread != NULL);
 
-    SPDK_DBG("Creating poll groups for all CPUs\n");
+    SPDK_DBG("Creating poll groups for all CPUs. g_poll_groups_mask=%p\n", g_poll_groups_mask);
 	SPDK_ENV_FOREACH_CORE(cpu) {
         SPDK_DBG("CPU=%d / 0x%x\n", cpu, cpu);
 		if (g_poll_groups_mask && !spdk_cpuset_get_cpu(g_poll_groups_mask, cpu)) {

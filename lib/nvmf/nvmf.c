@@ -361,7 +361,7 @@ spdk_nvmf_tgt_create(struct spdk_nvmf_target_opts *_opts)
 		.discovery_filter = SPDK_NVMF_TGT_DISCOVERY_MATCH_ANY,
 	};
 
-    SPDK_DBG("Creating tgt. name=%s max_subsystems=%d\n", opts.name, opts.max_subsystems);
+    SPDK_DBG("Creating tgt ... name=%s max_subsystems=%d\n", _opts->name, _opts->max_subsystems);
 
 	memcpy(&opts, _opts, _opts->size);
 	if (strnlen(opts.name, NVMF_TGT_NAME_MAX_LENGTH) == NVMF_TGT_NAME_MAX_LENGTH) {

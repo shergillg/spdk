@@ -399,6 +399,8 @@ rpc_nvmf_create_subsystem(struct spdk_jsonrpc_request *request,
 		goto cleanup;
 	}
 
+    SPDK_DBG("tgt name=%s max_subsystems=%d num_poll_groups=%d\n",
+            tgt->name, tgt->max_subsystems, tgt->num_poll_groups);
 	subsystem = spdk_nvmf_subsystem_create(tgt, req->nqn, SPDK_NVMF_SUBTYPE_NVME,
 					       req->max_namespaces);
 	if (!subsystem) {
@@ -758,6 +760,8 @@ nvmf_rpc_listen_paused(struct spdk_nvmf_subsystem *subsystem,
 
 	switch (ctx->op) {
 	case NVMF_RPC_LISTEN_ADD:
+        SPDK_DBG("LISTEN_ADD trstring=%s traddr=%s trsvcid=%s subnqn=%s\n",
+                ctx->trid.trstring, ctx->trid.traddr, ctx->trid.trsvcid, ctx->trid.subnqn);
 		if (nvmf_subsystem_find_listener(subsystem, &ctx->trid)) {
 			SPDK_ERRLOG("Listener already exists\n");
 			spdk_jsonrpc_send_error_response(ctx->request, SPDK_JSONRPC_ERROR_INVALID_PARAMS,
@@ -778,6 +782,8 @@ nvmf_rpc_listen_paused(struct spdk_nvmf_subsystem *subsystem,
 						     &ctx->listener_opts);
 		return;
 	case NVMF_RPC_LISTEN_REMOVE:
+        SPDK_DBG("LISTEN_REMOVE trstring=%s traddr=%s trsvcid=%s subnqn=%s\n",
+                ctx->trid.trstring, ctx->trid.traddr, ctx->trid.trsvcid, ctx->trid.subnqn);
 		rc = spdk_nvmf_subsystem_remove_listener(subsystem, &ctx->trid);
 		if (rc) {
 			SPDK_ERRLOG("Unable to remove listener, rc %d\n", rc);
@@ -791,6 +797,8 @@ nvmf_rpc_listen_paused(struct spdk_nvmf_subsystem *subsystem,
 						      nvmf_rpc_stop_listen_async_done, ctx);
 		return;
 	case NVMF_RPC_LISTEN_SET_ANA_STATE:
+        SPDK_DBG("LISTEN_SET_ANA_STATE trstring=%s traddr=%s trsvcid=%s subnqn=%s\n",
+                ctx->trid.trstring, ctx->trid.traddr, ctx->trid.trsvcid, ctx->trid.subnqn);
 		spdk_nvmf_subsystem_set_ana_state(subsystem, &ctx->trid, ctx->ana_state, ctx->anagrpid,
 						  nvmf_rpc_set_ana_state_done, ctx);
 		return;
@@ -896,6 +904,8 @@ rpc_nvmf_subsystem_add_listener(struct spdk_jsonrpc_request *request,
 	}
 	ctx->tgt = tgt;
 
+    SPDK_DBG("Adding a listner to tgt=%s nqn=%s\n", tgt->name, ctx->nqn);
+
 	subsystem = spdk_nvmf_tgt_find_subsystem(tgt, ctx->nqn);
 	if (!subsystem) {
 		SPDK_ERRLOG("Unable to find subsystem with NQN %s\n", ctx->nqn);
@@ -903,6 +913,12 @@ rpc_nvmf_subsystem_add_listener(struct spdk_jsonrpc_request *request,
 		nvmf_rpc_listener_ctx_free(ctx);
 		return;
 	}
+
+    SPDK_DBG("id=%d allow_any_host=%d allow_any_listener=%d ana_reporting=%d\n",
+            subsystem->id, subsystem->allow_any_host,
+            subsystem->flags.allow_any_listener, subsystem->flags.ana_reporting);
+    SPDK_DBG("max_nsid=%d min_cntlid=%d max_cntlid=%d next_cntlid=%d\n",
+            subsystem->max_nsid, subsystem->min_cntlid, subsystem->max_cntlid, subsystem->next_cntlid);
 
 	ctx->subsystem = subsystem;
 
@@ -980,6 +996,8 @@ rpc_nvmf_subsystem_remove_listener(struct spdk_jsonrpc_request *request,
 		return;
 	}
 	ctx->tgt = tgt;
+
+    SPDK_DBG("Remove listner from tgt=%s nqn=%s\n", tgt->name, ctx->nqn);
 
 	subsystem = spdk_nvmf_tgt_find_subsystem(tgt, ctx->nqn);
 	if (!subsystem) {

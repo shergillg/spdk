@@ -813,7 +813,7 @@ spdk_nvmf_subsystem_pause(struct spdk_nvmf_subsystem *subsystem,
 			  spdk_nvmf_subsystem_state_change_done cb_fn,
 			  void *cb_arg)
 {
-    SPDK_DBG("Pause id=%d subnqn=%s\n", subsystem->id, subsystem->subnqn);
+    SPDK_DBG("Pause id=%d nsid=%d subnqn=%s\n", subsystem->id, nsid, subsystem->subnqn);
 	return nvmf_subsystem_state_change(subsystem, nsid, SPDK_NVMF_SUBSYSTEM_PAUSED, cb_fn, cb_arg);
 }
 

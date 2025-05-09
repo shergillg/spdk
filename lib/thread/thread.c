@@ -557,6 +557,7 @@ spdk_thread_create(const char *name, const struct spdk_cpuset *cpumask)
 		return NULL;
 	}
 	thread->id = g_thread_id++;
+    SPDK_DBG("Assigned thread->id=%ld\n", thread->id);
 	TAILQ_INSERT_TAIL(&g_threads, thread, tailq);
 	g_thread_count++;
 	pthread_mutex_unlock(&g_devlist_mutex);
